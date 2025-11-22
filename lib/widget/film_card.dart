@@ -17,7 +17,8 @@ class FilmCard extends StatefulWidget {
   State<FilmCard> createState() => _FilmCardState();
 }
 
-class _FilmCardState extends State<FilmCard> with SingleTickerProviderStateMixin {
+class _FilmCardState extends State<FilmCard>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
 
@@ -66,76 +67,86 @@ class _FilmCardState extends State<FilmCard> with SingleTickerProviderStateMixin
             child: Container(
               width: 150,
               margin: const EdgeInsets.only(right: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    // Background Poster
+                    CachedNetworkImage(
+                      imageUrl: widget.film.posterUrl,
+                      fit: BoxFit.cover,
+                      height: 225,
+                      width: double.infinity,
+                      placeholder: (context, url) => Container(
+                        color: AppTheme.tertiaryColor,
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            color: AppTheme.primaryColor,
+                          ),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        color: AppTheme.tertiaryColor,
+                        child: const Icon(
+                          Icons.error,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    // Overlay Gradien dan Informasi
+                    Container(
+                      height: 225,
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.black54,
+                            Colors.black,
+                          ],
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.film.title,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                                size: 14,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                widget.film.rating.toString(),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: CachedNetworkImage(
-                          imageUrl: widget.film.posterUrl,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          placeholder: (context, url) => Container(
-                            color: AppTheme.tertiaryColor,
-                            child: const Center(
-                              child: CircularProgressIndicator(
-                                color: AppTheme.primaryColor,
-                              ),
-                            ),
-                          ),
-                          errorWidget: (context, url, error) => Container(
-                            color: AppTheme.tertiaryColor,
-                            child: const Icon(
-                              Icons.error,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    widget.film.title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.star,
-                        color: Colors.amber,
-                        size: 14,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        widget.film.rating.toString(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );

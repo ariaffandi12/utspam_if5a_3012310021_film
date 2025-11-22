@@ -6,6 +6,8 @@ import 'package:utspam_if5a_3012310021_filmbioskop/services/auth_service.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/services/home_service.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/theme/app_theme.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/widget/film_card.dart';
+import 'package:utspam_if5a_3012310021_filmbioskop/widget/featured_movie_card_baru.dart'; // Import baru
+import 'package:utspam_if5a_3012310021_filmbioskop/widget/section_header_baru.dart'; // Import baru
 
 class HomeScreen extends StatefulWidget {
   final int initialIndex;
@@ -44,16 +46,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // --- PERUBAHAN DIMULAI DI SINI ---
-    // Pindahkan definisi _screens ke dalam metode build
-    // agar _goToHomeTab dapat diakses dengan aman.
     final List<Widget> _screens = [
       const HomeTab(),
       const FilmListScreen(),
       PurchaseHistoryScreen(onBackToHomePressed: _goToHomeTab),
       const ProfileScreen(),
     ];
-    // --- PERUBAHAN SELESAI DI SINI ---
 
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
@@ -112,59 +110,103 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class HomeTab extends StatelessWidget {
+// --- HOME TAB YANG DIPERBAIKI ---
+class HomeTab extends StatefulWidget {
   const HomeTab({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final nowPlayingMovies = HomeService.getNowPlayingMovies();
-    final recommendedMovies = HomeService.getRecommendedMovies();
+  State<HomeTab> createState() => _HomeTabState();
+}
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Sedang Tayang',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+class _HomeTabState extends State<HomeTab> {
+  List<dynamic> nowPlayingMovies = [];
+  List<dynamic> recommendedMovies = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMovies();
+  }
+
+  Future<void> _loadMovies() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    setState(() {
+      nowPlayingMovies = HomeService.getNowPlayingMovies();
+      recommendedMovies = HomeService.getRecommendedMovies();
+      _isLoading = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator(color: AppTheme.primaryColor));
+    }
+
+    final featuredMovie = nowPlayingMovies.isNotEmpty ? nowPlayingMovies.first : null;
+
+    return RefreshIndicator(
+      onRefresh: _loadMovies,
+      color: AppTheme.primaryColor,
+      child: CustomScrollView(
+        slivers: [
+          // Featured Movie Section
+          if (featuredMovie != null)
+            SliverToBoxAdapter(
+              child: FeaturedMovieCard(film: featuredMovie),
             ),
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            height: 250,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: nowPlayingMovies.length,
-              itemBuilder: (context, index) {
-                return FilmCard(film: nowPlayingMovies[index]);
+          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+          // Now Playing Section
+          SliverToBoxAdapter(
+            child: SectionHeader(
+              title: 'Sedang Tayang',
+              onSeeAllPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const FilmListScreen()),
+                );
               },
             ),
           ),
-          const SizedBox(height: 24),
-          const Text(
-            'Rekomendasi Film',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+          SliverToBoxAdapter(
+            child: _buildHorizontalFilmList(nowPlayingMovies),
           ),
-          const SizedBox(height: 16),
-          SizedBox(
-            height: 250,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: recommendedMovies.length,
-              itemBuilder: (context, index) {
-                return FilmCard(film: recommendedMovies[index]);
+          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+          // Recommended Section
+          SliverToBoxAdapter(
+            child: SectionHeader(
+              title: 'Rekomendasi Film',
+              onSeeAllPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const FilmListScreen()),
+                );
               },
             ),
+          ),
+          SliverToBoxAdapter(
+            child: _buildHorizontalFilmList(recommendedMovies),
+          ),
+          // Padding di bagian bawah agar tidak mentok
+          const SliverToBoxAdapter(
+            child: SizedBox(height: 20),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildHorizontalFilmList(List films) {
+    return SizedBox(
+      height: 250,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: films.length,
+        itemBuilder: (context, index) {
+          return FilmCard(film: films[index]);
+        },
       ),
     );
   }
