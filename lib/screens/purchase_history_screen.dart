@@ -4,10 +4,10 @@ import 'package:utspam_if5a_3012310021_filmbioskop/models/transaction_model.dart
 import 'package:utspam_if5a_3012310021_filmbioskop/services/auth_service.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/theme/app_theme.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/widget/transaction_card.dart'; // Ensure this file defines TransactionCard
-import 'package:utspam_if5a_3012310021_filmbioskop/widget/custom_button.dart'; // <-- IMPORT TAMBAHAN
+import 'package:utspam_if5a_3012310021_filmbioskop/widget/custom_button.dart'; 
 
 class PurchaseHistoryScreen extends StatefulWidget {
-  // Tambahkan parameter untuk menerima fungsi callback
+  
   final VoidCallback? onBackToHomePressed;
 
   const PurchaseHistoryScreen({Key? key, this.onBackToHomePressed}) : super(key: key);
