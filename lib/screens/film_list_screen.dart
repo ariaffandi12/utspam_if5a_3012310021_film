@@ -5,39 +5,48 @@ import 'package:utspam_if5a_3012310021_filmbioskop/screens/film_schedule_screen.
 import 'package:utspam_if5a_3012310021_filmbioskop/services/home_service.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/theme/app_theme.dart';
 
-class FilmListScreen extends StatefulWidget {
+class FilmListScreen extends StatelessWidget {
   const FilmListScreen({Key? key}) : super(key: key);
 
   @override
-  State<FilmListScreen> createState() => _FilmListScreenState();
-}
-
-class _FilmListScreenState extends State<FilmListScreen> {
-  List<Film> _films = [];
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadFilms();
-  }
-
-  Future<void> _loadFilms() async {
-    // Simulate network delay
-    await Future.delayed(const Duration(seconds: 1));
-    
-    final films = HomeService.getAllMovies();
-    setState(() {
-      _films = films;
-      _isLoading = false;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return _isLoading ? _buildShimmerEffect() : _buildFilmGrid();
+    // Menggunakan FutureBuilder untuk menangani pemuatan data secara asynchronous
+    return FutureBuilder<List<Film>>(
+      // --- PERUBAHAN HANYA DI BARIS INI ---
+      // Bungkus pemanggilan sinkron ke dalam Future.value()
+      future: Future.value(HomeService.getAllMovies()),
+      // ------------------------------------
+      builder: (context, snapshot) {
+        // --- State 1: Sedang Memuat ---
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _buildShimmerEffect();
+        }
+        // --- State 2: Terjadi Error ---
+        if (snapshot.hasError) {
+          return const Center(
+            child: Text(
+              'Terjadi kesalahan saat memuat film.',
+              style: TextStyle(color: Colors.red),
+            ),
+          );
+        }
+        // --- State 3: Data Selesai Dimuat ---
+        if (snapshot.hasData) {
+          final films = snapshot.data!;
+          return _buildFilmGrid(films);
+        }
+        // --- State Default: Tidak ada data ---
+        return const Center(
+          child: Text(
+            'Tidak ada film yang tersedia.',
+            style: TextStyle(color: Colors.white),
+          ),
+        );
+      },
+    );
   }
 
+  // Widget untuk menampilkan efek shimmer saat loading
   Widget _buildShimmerEffect() {
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -48,7 +57,7 @@ class _FilmListScreenState extends State<FilmListScreen> {
           crossAxisSpacing: 16,
           mainAxisSpacing: 16,
         ),
-        itemCount: 6,
+        itemCount: 6, // Jumlah placeholder shimmer
         itemBuilder: (context, index) {
           return Shimmer.fromColors(
             baseColor: AppTheme.tertiaryColor,
@@ -65,7 +74,8 @@ class _FilmListScreenState extends State<FilmListScreen> {
     );
   }
 
-  Widget _buildFilmGrid() {
+  // Widget untuk menampilkan grid film
+  Widget _buildFilmGrid(List<Film> films) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: GridView.builder(
@@ -75,9 +85,9 @@ class _FilmListScreenState extends State<FilmListScreen> {
           crossAxisSpacing: 16,
           mainAxisSpacing: 16,
         ),
-        itemCount: _films.length,
+        itemCount: films.length,
         itemBuilder: (context, index) {
-          final film = _films[index];
+          final film = films[index];
           return GestureDetector(
             onTap: () {
               Navigator.push(
@@ -88,22 +98,22 @@ class _FilmListScreenState extends State<FilmListScreen> {
               );
             },
             child: Card(
+              clipBehavior: Clip.antiAlias,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: Container(
+                    child: Image.network(
+                      film.posterUrl,
                       width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(12),
-                          topRight: Radius.circular(12),
-                        ),
-                        image: DecorationImage(
-                          image: NetworkImage(film.posterUrl),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: double.infinity,
+                          color: AppTheme.tertiaryColor,
+                          child: const Icon(Icons.broken_image, color: Colors.grey),
+                        );
+                      },
                     ),
                   ),
                   Padding(
