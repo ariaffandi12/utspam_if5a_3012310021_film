@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:utspam_if5a_3012310021_filmbioskop/models/film_model.dart'; // <-- TAMBAHKAN IMPORT INI
+import 'package:utspam_if5a_3012310021_filmbioskop/models/film_model.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/screens/film_list_screen.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/screens/purchase_history_screen.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/screens/profile_screen.dart';
@@ -9,6 +9,7 @@ import 'package:utspam_if5a_3012310021_filmbioskop/theme/app_theme.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/widget/film_card.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/widget/featured_movie_card_baru.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/widget/section_header_baru.dart';
+import 'package:utspam_if5a_3012310021_filmbioskop/widget/background_pattern_baru.dart'; // <-- Import baru
 
 class HomeScreen extends StatefulWidget {
   final int initialIndex;
@@ -57,6 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
       HomeTab(
         key: ValueKey(_currentIndex),
         onSeeAllPressed: () => _changeTab(1),
+        username: _username, // Kirim username ke HomeTab
       ),
       const FilmListScreen(),
       PurchaseHistoryScreen(onBackToHomePressed: _goToHomeTab),
@@ -111,15 +113,15 @@ class _HomeScreenState extends State<HomeScreen> {
 // --- HOME TAB YANG DIPERBAIKI ---
 class HomeTab extends StatefulWidget {
   final VoidCallback? onSeeAllPressed;
+  final String? username; // Terima username
 
-  const HomeTab({Key? key, this.onSeeAllPressed}) : super(key: key);
+  const HomeTab({Key? key, this.onSeeAllPressed, this.username}) : super(key: key);
 
   @override
   State<HomeTab> createState() => _HomeTabState();
 }
 
 class _HomeTabState extends State<HomeTab> {
-  // --- PERBAIKAN TIPE DATA DI SINI ---
   List<Film> nowPlayingMovies = [];
   List<Film> recommendedMovies = [];
   bool _isLoading = true;
@@ -142,57 +144,94 @@ class _HomeTabState extends State<HomeTab> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: AppTheme.primaryColor));
+      return const BackgroundPattern(
+        child: Center(child: CircularProgressIndicator(color: AppTheme.primaryColor)),
+      );
     }
 
     final featuredMovie = nowPlayingMovies.isNotEmpty ? nowPlayingMovies.first : null;
 
-    return RefreshIndicator(
-      onRefresh: _loadMovies,
-      color: AppTheme.primaryColor,
-      child: CustomScrollView(
-        slivers: [
-          if (featuredMovie != null)
+    // Bungkus seluruh konten dengan BackgroundPattern
+    return BackgroundPattern(
+      child: RefreshIndicator(
+        onRefresh: _loadMovies,
+        color: AppTheme.primaryColor,
+        child: CustomScrollView(
+          slivers: [
+            // --- Elemen Sambutan Baru ---
             SliverToBoxAdapter(
-              child: FeaturedMovieCard(film: featuredMovie),
-            ),
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
-          if (nowPlayingMovies.isNotEmpty)
-            SliverToBoxAdapter(
-              child: _buildSectionCard(
-                title: 'Sedang Tayang',
-                films: nowPlayingMovies,
-                onSeeAllPressed: widget.onSeeAllPressed,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Halo, ${widget.username ?? 'User'}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Apa yang ingin kamu tonton hari ini?',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
-          if (recommendedMovies.isNotEmpty)
-            SliverToBoxAdapter(
-              child: _buildSectionCard(
-                title: 'Rekomendasi Film',
-                films: recommendedMovies,
-                onSeeAllPressed: widget.onSeeAllPressed,
+            const SliverToBoxAdapter(child: SizedBox(height: 16)),
+            // Featured Movie Section
+            if (featuredMovie != null)
+              SliverToBoxAdapter(
+                child: FeaturedMovieCard(film: featuredMovie),
               ),
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+            // Now Playing Section Card
+            if (nowPlayingMovies.isNotEmpty)
+              SliverToBoxAdapter(
+                child: _buildSectionCard(
+                  title: 'Sedang Tayang',
+                  films: nowPlayingMovies,
+                  onSeeAllPressed: widget.onSeeAllPressed,
+                ),
+              ),
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+            // Recommended Section Card
+            if (recommendedMovies.isNotEmpty)
+              SliverToBoxAdapter(
+                child: _buildSectionCard(
+                  title: 'Rekomendasi Film',
+                  films: recommendedMovies,
+                  onSeeAllPressed: widget.onSeeAllPressed,
+                ),
+              ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 40), // Tambah jarak di bawah
             ),
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 20),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildSectionCard({
     required String title,
-    required List<Film> films, // Tipe juga disesuaikan
+    required List<Film> films,
     VoidCallback? onSeeAllPressed,
   }) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.tertiaryColor,
+        color: AppTheme.tertiaryColor.withOpacity(0.5), // Beri sedikit transparansi
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.1)), // Tambahkan border tipis
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
