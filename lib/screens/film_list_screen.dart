@@ -11,38 +11,47 @@ class FilmListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Menggunakan FutureBuilder untuk menangani pemuatan data secara asynchronous
-    return FutureBuilder<List<Film>>(
-      // --- PERUBAHAN HANYA DI BARIS INI ---
-      // Bungkus pemanggilan sinkron ke dalam Future.value()
-      future: Future.value(HomeService.getAllMovies()),
+    return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
+      // --- TAMBAHKAN APPBAR INI ---
+      appBar: AppBar(
+        title: const Text('Daftar Film'),
+        centerTitle: true,
+        // automaticallyImplyLeading bernilai true secara default,
+        // jadi tombol kembali akan muncul otomatis.
+      ),
       // ------------------------------------
-      builder: (context, snapshot) {
-        // --- State 1: Sedang Memuat ---
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildShimmerEffect();
-        }
-        // --- State 2: Terjadi Error ---
-        if (snapshot.hasError) {
+      body: FutureBuilder<List<Film>>(
+        // Bungkus pemanggilan sinkron ke dalam Future.value()
+        future: Future.value(HomeService.getAllMovies()),
+        builder: (context, snapshot) {
+          // --- State 1: Sedang Memuat ---
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return _buildShimmerEffect();
+          }
+          // --- State 2: Terjadi Error ---
+          if (snapshot.hasError) {
+            return const Center(
+              child: Text(
+                'Terjadi kesalahan saat memuat film.',
+                style: TextStyle(color: Colors.red),
+              ),
+            );
+          }
+          // --- State 3: Data Selesai Dimuat ---
+          if (snapshot.hasData) {
+            final films = snapshot.data!;
+            return _buildFilmGrid(films);
+          }
+          // --- State Default: Tidak ada data ---
           return const Center(
             child: Text(
-              'Terjadi kesalahan saat memuat film.',
-              style: TextStyle(color: Colors.red),
+              'Tidak ada film yang tersedia.',
+              style: TextStyle(color: Colors.white),
             ),
           );
-        }
-        // --- State 3: Data Selesai Dimuat ---
-        if (snapshot.hasData) {
-          final films = snapshot.data!;
-          return _buildFilmGrid(films);
-        }
-        // --- State Default: Tidak ada data ---
-        return const Center(
-          child: Text(
-            'Tidak ada film yang tersedia.',
-            style: TextStyle(color: Colors.white),
-          ),
-        );
-      },
+        },
+      ),
     );
   }
 
