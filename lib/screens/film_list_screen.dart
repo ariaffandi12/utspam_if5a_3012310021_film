@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:utspam_IF5A_3012310021_filmbioskop/models/film_model.dart';
-import 'package:utspam_IF5A_3012310021_filmbioskop/screens/film_schedule_screen.dart';
-import 'package:utspam_IF5A_3012310021_filmbioskop/services/home_service.dart';
-import 'package:utspam_IF5A_3012310021_filmbioskop/theme/app_theme.dart';
+import 'package:utspam_if5a_3012310021_filmbioskop/models/film_model.dart';
+import 'package:utspam_if5a_3012310021_filmbioskop/screens/film_schedule_screen.dart';
+import 'package:utspam_if5a_3012310021_filmbioskop/services/home_service.dart';
+import 'package:utspam_if5a_3012310021_filmbioskop/theme/app_theme.dart';
 
 class FilmListScreen extends StatelessWidget {
   const FilmListScreen({Key? key}) : super(key: key);

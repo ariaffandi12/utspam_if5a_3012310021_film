@@ -1,18 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:utspam_if5a_3012310021_filmbioskop/models/user_model.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/screens/login_screen.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/services/auth_service.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/theme/app_theme.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/widget/custom_button.dart';
 
-// --- UBAH MENJADI STATELESSWIDGET ---
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
   Future<void> _logout(BuildContext context) async {
+    // Tampilkan dialog konfirmasi sebelum logout
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Konfirmasi Logout'),
+        content: const Text('Apakah Anda yakin ingin keluar?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Ya'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
     await AuthService.logout();
     
-    // Arahkan pengguna kembali ke layar login dan hapus semua riwayat navigasi
     Navigator.pushAndRemoveUntil(
       context,
       PageTransition(
@@ -25,22 +45,18 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Menggunakan FutureBuilder untuk menangani pemuatan data user
-    return FutureBuilder(
+    return FutureBuilder<User?>(
       future: AuthService.getCurrentUser(),
       builder: (context, snapshot) {
-        // --- State 1: Sedang Memuat ---
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
             child: CircularProgressIndicator(color: AppTheme.primaryColor),
           );
         }
-        // --- State 2: Data Selesai Dimuat ---
-        if (snapshot.hasData) {
+        if (snapshot.hasData && snapshot.data != null) {
           final user = snapshot.data!;
           return _buildProfileContent(context, user);
         }
-        // --- State Default: Tidak ada data ---
         return const Center(
           child: Text(
             'Data pengguna tidak ditemukan.',
@@ -51,42 +67,45 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  // Widget untuk menampilkan konten profil
-  Widget _buildProfileContent(BuildContext context, Map<String, dynamic> user) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          const SizedBox(height: 20),
-          // Bagian Avatar dan Nama
-          Center(
+  Widget _buildProfileContent(BuildContext context, User user) {
+    return CustomScrollView(
+      slivers: [
+        // Bagian Header dengan Avatar dan Nama
+        SliverToBoxAdapter(
+          child: Container(
+            margin: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: AppTheme.tertiaryColor,
+              borderRadius: BorderRadius.circular(16),
+            ),
             child: Column(
               children: [
                 Container(
-                  width: 120,
-                  height: 120,
+                  width: 100,
+                  height: 100,
                   decoration: BoxDecoration(
                     color: AppTheme.primaryColor,
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
                     Icons.person,
-                    size: 60,
+                    size: 50,
                     color: Colors.white,
                   ),
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  user['fullName'] ?? 'User',
+                  user.fullName,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 24,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 4),
                 Text(
-                  '@${user['username'] ?? 'user'}',
+                  '@${user.username}',
                   style: const TextStyle(
                     color: Colors.grey,
                     fontSize: 16,
@@ -95,85 +114,97 @@ class ProfileScreen extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 40),
-          // Bagian Informasi Pribadi
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'Informasi Pribadi',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+        ),
+        const SliverToBoxAdapter(child: SizedBox(height: 24)),
+        // Bagian Informasi Pribadi
+        SliverToBoxAdapter(
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: AppTheme.tertiaryColor,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text(
+                    'Informasi Pribadi',
+                    style: TextStyle(
+                      color: AppTheme.primaryColor,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                _buildInfoTile(
+                  icon: Icons.email,
+                  label: 'Email',
+                  value: user.email,
+                ),
+                _buildInfoTile(
+                  icon: Icons.location_on,
+                  label: 'Alamat',
+                  value: user.address,
+                ),
+                _buildInfoTile(
+                  icon: Icons.phone,
+                  label: 'Nomor Telepon',
+                  value: user.phoneNumber,
+                  showBottomBorder: false, // Hilangkan garis bawah di item terakhir
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 16),
-          _buildInfoCard(
-            icon: Icons.email,
-            label: 'Email',
-            value: user['email'] ?? 'Tidak ada data',
+        ),
+        const SliverToBoxAdapter(child: SizedBox(height: 32)),
+        // Bagian Tombol Logout
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: CustomButton(
+              text: 'Logout',
+              onPressed: () => _logout(context),
+              backgroundColor: Colors.red,
+            ),
           ),
-          const SizedBox(height: 12),
-          _buildInfoCard(
-            icon: Icons.location_on,
-            label: 'Alamat',
-            value: user['address'] ?? 'Tidak ada data',
-          ),
-          const SizedBox(height: 12),
-          _buildInfoCard(
-            icon: Icons.phone,
-            label: 'Nomor Telepon',
-            value: user['phoneNumber'] ?? 'Tidak ada data',
-          ),
-          const SizedBox(height: 40),
-          // Tombol Logout
-          CustomButton(
-            text: 'Logout',
-            onPressed: () => _logout(context),
-            backgroundColor: Colors.red,
-          ),
-          const SizedBox(height: 20),
-        ],
-      ),
+        ),
+        const SliverToBoxAdapter(child: SizedBox(height: 32)), // Padding di bawah
+      ],
     );
   }
 
-  // Widget helper untuk membuat kartu informasi
-  Widget _buildInfoCard({required IconData icon, required String label, required String value}) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.tertiaryColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: AppTheme.primaryColor, size: 24),
-          const SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: const TextStyle(
-                  color: Colors.grey,
-                  fontSize: 12,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                value,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                ),
-              ),
-            ],
+  // Widget helper untuk membuat ListTile informasi
+  Widget _buildInfoTile({
+    required IconData icon,
+    required String label,
+    required String value,
+    bool showBottomBorder = true,
+  }) {
+    return Column(
+      children: [
+        ListTile(
+          leading: Icon(icon, color: AppTheme.primaryColor),
+          title: Text(
+            label,
+            style: const TextStyle(color: Colors.grey, fontSize: 14),
           ),
-        ],
-      ),
+          subtitle: Text(
+            value,
+            style: const TextStyle(color: Colors.white, fontSize: 16),
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        ),
+        if (showBottomBorder)
+          Padding(
+            padding: const EdgeInsets.only(left: 72.0), // Sejajarkan dengan teks subtitle
+            child: Divider(
+              height: 1,
+              color: Colors.white.withOpacity(0.1),
+            ),
+          ),
+      ],
     );
   }
 }

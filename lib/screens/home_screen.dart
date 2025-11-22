@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:utspam_if5a_3012310021_filmbioskop/models/film_model.dart'; // <-- TAMBAHKAN IMPORT INI
 import 'package:utspam_if5a_3012310021_filmbioskop/screens/film_list_screen.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/screens/purchase_history_screen.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/screens/profile_screen.dart';
@@ -7,7 +8,6 @@ import 'package:utspam_if5a_3012310021_filmbioskop/services/home_service.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/theme/app_theme.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/widget/film_card.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/widget/featured_movie_card_baru.dart';
-
 import 'package:utspam_if5a_3012310021_filmbioskop/widget/section_header_baru.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -45,7 +45,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  // Fungsi untuk mengubah tab
   void _changeTab(int index) {
     setState(() {
       _currentIndex = index;
@@ -55,10 +54,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> _screens = [
-      // Kirim fungsi _changeTab ke HomeTab
       HomeTab(
         key: ValueKey(_currentIndex),
-        onSeeAllPressed: () => _changeTab(1), // 1 adalah index untuk 'Daftar Film'
+        onSeeAllPressed: () => _changeTab(1),
       ),
       const FilmListScreen(),
       PurchaseHistoryScreen(onBackToHomePressed: _goToHomeTab),
@@ -111,54 +109,110 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 // --- HOME TAB YANG DIPERBAIKI ---
-class HomeTab extends StatelessWidget {
-  final VoidCallback? onSeeAllPressed; // Terima callback
+class HomeTab extends StatefulWidget {
+  final VoidCallback? onSeeAllPressed;
 
   const HomeTab({Key? key, this.onSeeAllPressed}) : super(key: key);
 
   @override
+  State<HomeTab> createState() => _HomeTabState();
+}
+
+class _HomeTabState extends State<HomeTab> {
+  // --- PERBAIKAN TIPE DATA DI SINI ---
+  List<Film> nowPlayingMovies = [];
+  List<Film> recommendedMovies = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMovies();
+  }
+
+  Future<void> _loadMovies() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    setState(() {
+      nowPlayingMovies = HomeService.getNowPlayingMovies();
+      recommendedMovies = HomeService.getRecommendedMovies();
+      _isLoading = false;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // ... kode untuk memuat film tetap sama
-    List<dynamic> nowPlayingMovies = HomeService.getNowPlayingMovies();
-    List<dynamic> recommendedMovies = HomeService.getRecommendedMovies();
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator(color: AppTheme.primaryColor));
+    }
+
+    final featuredMovie = nowPlayingMovies.isNotEmpty ? nowPlayingMovies.first : null;
 
     return RefreshIndicator(
-      onRefresh: () async {}, // Tetap biarkan bisa refresh
+      onRefresh: _loadMovies,
       color: AppTheme.primaryColor,
       child: CustomScrollView(
         slivers: [
-          // ... bagian Featured Movie
-          SliverToBoxAdapter(
-            child: SectionHeader(
-              title: 'Sedang Tayang',
-              onSeeAllPressed: onSeeAllPressed, // Gunakan callback di sini
+          if (featuredMovie != null)
+            SliverToBoxAdapter(
+              child: FeaturedMovieCard(film: featuredMovie),
             ),
-          ),
-          SliverToBoxAdapter(child: _buildHorizontalFilmList(nowPlayingMovies)),
           const SliverToBoxAdapter(child: SizedBox(height: 24)),
-          SliverToBoxAdapter(
-            child: SectionHeader(
-              title: 'Rekomendasi Film',
-              onSeeAllPressed: onSeeAllPressed, // Dan di sini
+          if (nowPlayingMovies.isNotEmpty)
+            SliverToBoxAdapter(
+              child: _buildSectionCard(
+                title: 'Sedang Tayang',
+                films: nowPlayingMovies,
+                onSeeAllPressed: widget.onSeeAllPressed,
+              ),
             ),
+          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+          if (recommendedMovies.isNotEmpty)
+            SliverToBoxAdapter(
+              child: _buildSectionCard(
+                title: 'Rekomendasi Film',
+                films: recommendedMovies,
+                onSeeAllPressed: widget.onSeeAllPressed,
+              ),
+            ),
+          const SliverToBoxAdapter(
+            child: SizedBox(height: 20),
           ),
-          SliverToBoxAdapter(child: _buildHorizontalFilmList(recommendedMovies)),
-          const SliverToBoxAdapter(child: SizedBox(height: 20)),
         ],
       ),
     );
   }
 
-  Widget _buildHorizontalFilmList(List films) {
-    return SizedBox(
-      height: 250,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: films.length,
-        itemBuilder: (context, index) {
-          return FilmCard(film: films[index]);
-        },
+  Widget _buildSectionCard({
+    required String title,
+    required List<Film> films, // Tipe juga disesuaikan
+    VoidCallback? onSeeAllPressed,
+  }) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.tertiaryColor,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SectionHeader(
+            title: title,
+            onSeeAllPressed: onSeeAllPressed,
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            height: 250,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: films.length,
+              itemBuilder: (context, index) {
+                return FilmCard(film: films[index]);
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
