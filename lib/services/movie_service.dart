@@ -13,9 +13,9 @@ class MovieService {
         posterUrl: 'https://ik.imagekit.io/Ari/Super%20Hero%20Movie.jpg',
         rating: 6.5,
         schedules: [
-          Jadwal(id: '1-1', date: '2023-12-25', time: '10:00', studio: 'Studio 1', price: 50000.0),
-          Jadwal(id: '1-2', date: '2023-12-25', time: '14:30', studio: 'Studio 2', price: 50000.0),
-          Jadwal(id: '1-3', date: '2023-12-26', time: '18:00', studio: 'Studio 3', price: 55000.0),
+          Jadwal(id: '1-1', date: '2025-12-25', time: '10:00', studio: 'Studio 1', price: 50000.0),
+          Jadwal(id: '1-2', date: '2025-12-25', time: '14:30', studio: 'Studio 2', price: 50000.0),
+          Jadwal(id: '1-3', date: '2025-12-26', time: '18:00', studio: 'Studio 3', price: 55000.0),
         ],
       ),
       Film(
@@ -27,9 +27,9 @@ class MovieService {
         posterUrl: 'https://ik.imagekit.io/Ari/Warkop%20Dki%20Reborn.jpg',
         rating: 7.2,
         schedules: [
-          Jadwal(id: '2-1', date: '2023-12-25', time: '11:00', studio: 'Studio 4', price: 45000.0),
-          Jadwal(id: '2-2', date: '2023-12-26', time: '13:00', studio: 'Studio 1', price: 45000.0),
-          Jadwal(id: '2-3', date: '2023-12-27', time: '19:00', studio: 'Studio 2', price: 50000.0),
+          Jadwal(id: '2-1', date: '2025-12-25', time: '11:00', studio: 'Studio 4', price: 45000.0),
+          Jadwal(id: '2-2', date: '2025-12-26', time: '13:00', studio: 'Studio 1', price: 45000.0),
+          Jadwal(id: '2-3', date: '2025-12-27', time: '19:00', studio: 'Studio 2', price: 50000.0),
         ],
       ),
       Film(
@@ -41,9 +41,9 @@ class MovieService {
         posterUrl: 'https://ik.imagekit.io/Ari/Jadi%20Tuh%20Barang.jpeg',
         rating: 6.8,
         schedules: [
-          Jadwal(id: '3-1', date: '2023-12-25', time: '13:30', studio: 'Studio 5', price: 45000.0),
-          Jadwal(id: '3-2', date: '2023-12-26', time: '16:00', studio: 'Studio 4', price: 45000.0),
-          Jadwal(id: '3-3', date: '2023-12-27', time: '20:30', studio: 'Studio 3', price: 50000.0),
+          Jadwal(id: '3-1', date: '2025-12-25', time: '13:30', studio: 'Studio 5', price: 45000.0),
+          Jadwal(id: '3-2', date: '2025-12-26', time: '16:00', studio: 'Studio 4', price: 45000.0),
+          Jadwal(id: '3-3', date: '2025-12-27', time: '20:30', studio: 'Studio 3', price: 50000.0),
         ],
       ),
       Film(
@@ -55,9 +55,9 @@ class MovieService {
         posterUrl: 'https://ik.imagekit.io/Ari/Film%20Bucin.jpg',
         rating: 7.0,
         schedules: [
-          Jadwal(id: '4-1', date: '2023-12-25', time: '15:00', studio: 'Studio 2', price: 50000.0),
-          Jadwal(id: '4-2', date: '2023-12-26', time: '17:30', studio: 'Studio 1', price: 50000.0),
-          Jadwal(id: '4-3', date: '2023-12-27', time: '20:00', studio: 'Studio 5', price: 55000.0),
+          Jadwal(id: '4-1', date: '2025-12-25', time: '15:00', studio: 'Studio 2', price: 50000.0),
+          Jadwal(id: '4-2', date: '2025-12-26', time: '17:30', studio: 'Studio 1', price: 50000.0),
+          Jadwal(id: '4-3', date: '2025-12-27', time: '20:00', studio: 'Studio 5', price: 55000.0),
         ],
       ),
       Film(
@@ -69,9 +69,9 @@ class MovieService {
         posterUrl: 'https://ik.imagekit.io/Ari/The%20War%20Begins.jpg',
         rating: 7.8,
         schedules: [
-          Jadwal(id: '5-1', date: '2023-12-25', time: '17:00', studio: 'Studio 3', price: 60000.0),
-          Jadwal(id: '5-2', date: '2023-12-26', time: '19:30', studio: 'Studio 2', price: 60000.0),
-          Jadwal(id: '5-3', date: '2023-12-27', time: '21:00', studio: 'Studio 1', price: 65000.0),
+          Jadwal(id: '5-1', date: '2025-12-25', time: '17:00', studio: 'Studio 3', price: 60000.0),
+          Jadwal(id: '5-2', date: '2025-12-26', time: '19:30', studio: 'Studio 2', price: 60000.0),
+          Jadwal(id: '5-3', date: '2025-12-27', time: '21:00', studio: 'Studio 1', price: 65000.0),
         ],
       ),
       Film(
@@ -83,9 +83,9 @@ class MovieService {
         posterUrl: 'https://ik.imagekit.io/Ari/Transformers%20Age%20of%20Extinction.jpg',
         rating: 7.1,
         schedules: [
-          Jadwal(id: '6-1', date: '2023-12-25', time: '19:00', studio: 'Studio 1', price: 60000.0),
-          Jadwal(id: '6-2', date: '2023-12-26', time: '20:00', studio: 'Studio 4', price: 65000.0),
-          Jadwal(id: '6-3', date: '2023-12-27', time: '21:30', studio: 'Studio 2', price: 70000.0),
+          Jadwal(id: '6-1', date: '2025-12-25', time: '19:00', studio: 'Studio 1', price: 60000.0),
+          Jadwal(id: '6-2', date: '2025-12-26', time: '20:00', studio: 'Studio 4', price: 65000.0),
+          Jadwal(id: '6-3', date: '2025-12-27', time: '21:30', studio: 'Studio 2', price: 70000.0),
         ],
       ),
       Film(
@@ -97,9 +97,9 @@ class MovieService {
         posterUrl: 'https://ik.imagekit.io/Ari/Sekawan%20Limo.jpg',
         rating: 6.9,
         schedules: [
-          Jadwal(id: '7-1', date: '2023-12-25', time: '10:30', studio: 'Studio 5', price: 45000.0),
-          Jadwal(id: '7-2', date: '2023-12-26', time: '14:00', studio: 'Studio 3', price: 50000.0),
-          Jadwal(id: '7-3', date: '2023-12-27', time: '17:00', studio: 'Studio 4', price: 50000.0),
+          Jadwal(id: '7-1', date: '2025-12-25', time: '10:30', studio: 'Studio 5', price: 45000.0),
+          Jadwal(id: '7-2', date: '2025-12-26', time: '14:00', studio: 'Studio 3', price: 50000.0),
+          Jadwal(id: '7-3', date: '2025-12-27', time: '17:00', studio: 'Studio 4', price: 50000.0),
         ],
       ),
       Film(
@@ -111,9 +111,9 @@ class MovieService {
         posterUrl: 'https://ik.imagekit.io/Ari/Merah%20Putih%20Memanggile.jpg',
         rating: 8.0,
         schedules: [
-          Jadwal(id: '8-1', date: '2023-12-25', time: '12:00', studio: 'Studio 2', price: 55000.0),
-          Jadwal(id: '8-2', date: '2023-12-26', time: '15:30', studio: 'Studio 5', price: 55000.0),
-          Jadwal(id: '8-3', date: '2023-12-27', time: '18:30', studio: 'Studio 1', price: 60000.0),
+          Jadwal(id: '8-1', date: '2025-12-25', time: '12:00', studio: 'Studio 2', price: 55000.0),
+          Jadwal(id: '8-2', date: '2025-12-26', time: '15:30', studio: 'Studio 5', price: 55000.0),
+          Jadwal(id: '8-3', date: '2025-12-27', time: '18:30', studio: 'Studio 1', price: 60000.0),
         ],
       ),
       Film(
@@ -125,9 +125,9 @@ class MovieService {
         posterUrl: 'https://ik.imagekit.io/Ari/Pinjam%20100.jpg',
         rating: 6.7,
         schedules: [
-          Jadwal(id: '9-1', date: '2023-12-25', time: '11:30', studio: 'Studio 3', price: 45000.0),
-          Jadwal(id: '9-2', date: '2023-12-26', time: '13:30', studio: 'Studio 4', price: 45000.0),
-          Jadwal(id: '9-3', date: '2023-12-27', time: '16:30', studio: 'Studio 5', price: 50000.0),
+          Jadwal(id: '9-1', date: '2025-12-25', time: '11:30', studio: 'Studio 3', price: 45000.0),
+          Jadwal(id: '9-2', date: '2025-12-26', time: '13:30', studio: 'Studio 4', price: 45000.0),
+          Jadwal(id: '9-3', date: '2025-12-27', time: '16:30', studio: 'Studio 5', price: 50000.0),
         ],
       ),
       Film(
@@ -139,9 +139,9 @@ class MovieService {
         posterUrl: 'https://ik.imagekit.io/Ari/Transformers%20Rise%20Of%20the%20Beasts.jpg',
         rating: 7.5,
         schedules: [
-          Jadwal(id: '10-1', date: '2023-12-25', time: '20:00', studio: 'Studio 1', price: 65000.0),
-          Jadwal(id: '10-2', date: '2023-12-26', time: '21:00', studio: 'Studio 2', price: 70000.0),
-          Jadwal(id: '10-3', date: '2023-12-27', time: '22:00', studio: 'Studio 3', price: 75000.0),
+          Jadwal(id: '10-1', date: '2025-12-25', time: '20:00', studio: 'Studio 1', price: 65000.0),
+          Jadwal(id: '10-2', date: '2025-12-26', time: '21:00', studio: 'Studio 2', price: 70000.0),
+          Jadwal(id: '10-3', date: '2025-12-27', time: '22:00', studio: 'Studio 3', price: 75000.0),
         ],
       ),
     ];
