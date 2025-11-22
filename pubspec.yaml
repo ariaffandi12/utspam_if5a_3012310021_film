@@ -1,0 +1,25 @@
+name: utspam_if5a_3012310021_filmbioskop
+description: Aplikasi pembelian tiket film bioskop
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  shared_preferences: ^2.2.0
+  intl: ^0.18.1
+  uuid: ^3.0.7
+  cached_network_image: ^3.2.3
+  shimmer: ^3.0.0
+  page_transition: ^2.0.9
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
