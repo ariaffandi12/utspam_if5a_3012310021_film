@@ -15,7 +15,7 @@ class FilmListScreen extends StatelessWidget {
       backgroundColor: AppTheme.backgroundColor,
       // --- TAMBAHKAN APPBAR INI ---
       appBar: AppBar(
-        title: const Text('Daftar Film'),
+        title: const Text(''),
         centerTitle: true,
         // automaticallyImplyLeading bernilai true secara default,
         // jadi tombol kembali akan muncul otomatis.
