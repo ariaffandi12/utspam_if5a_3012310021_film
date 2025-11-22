@@ -1,61 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:utspam_if5a_3012310021_filmbioskop/models/film_model.dart';
-import 'package:utspam_if5a_3012310021_filmbioskop/screens/film_schedule_screen.dart';
-import 'package:utspam_if5a_3012310021_filmbioskop/services/home_service.dart';
-import 'package:utspam_if5a_3012310021_filmbioskop/theme/app_theme.dart';
+import 'package:utspam_IF5A_3012310021_filmbioskop/models/film_model.dart';
+import 'package:utspam_IF5A_3012310021_filmbioskop/screens/film_schedule_screen.dart';
+import 'package:utspam_IF5A_3012310021_filmbioskop/services/home_service.dart';
+import 'package:utspam_IF5A_3012310021_filmbioskop/theme/app_theme.dart';
 
 class FilmListScreen extends StatelessWidget {
   const FilmListScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // Menggunakan FutureBuilder untuk menangani pemuatan data secara asynchronous
-    return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
-      // --- TAMBAHKAN APPBAR INI ---
-      appBar: AppBar(
-        title: const Text(''),
-        centerTitle: true,
-        // automaticallyImplyLeading bernilai true secara default,
-        // jadi tombol kembali akan muncul otomatis.
-      ),
-      // ------------------------------------
-      body: FutureBuilder<List<Film>>(
-        // Bungkus pemanggilan sinkron ke dalam Future.value()
-        future: Future.value(HomeService.getAllMovies()),
-        builder: (context, snapshot) {
-          // --- State 1: Sedang Memuat ---
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return _buildShimmerEffect();
-          }
-          // --- State 2: Terjadi Error ---
-          if (snapshot.hasError) {
-            return const Center(
-              child: Text(
-                'Terjadi kesalahan saat memuat film.',
-                style: TextStyle(color: Colors.red),
-              ),
-            );
-          }
-          // --- State 3: Data Selesai Dimuat ---
-          if (snapshot.hasData) {
-            final films = snapshot.data!;
-            return _buildFilmGrid(films);
-          }
-          // --- State Default: Tidak ada data ---
+    // HAPUS APPBAR DAN SCAFFOLD
+    // Kita hanya perlu mengembalikan body-nya saja
+    return FutureBuilder<List<Film>>(
+      future: Future.value(HomeService.getAllMovies()),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _buildShimmerEffect();
+        }
+        if (snapshot.hasError) {
           return const Center(
             child: Text(
-              'Tidak ada film yang tersedia.',
-              style: TextStyle(color: Colors.white),
+              'Terjadi kesalahan saat memuat film.',
+              style: TextStyle(color: Colors.red),
             ),
           );
-        },
-      ),
+        }
+        if (snapshot.hasData) {
+          final films = snapshot.data!;
+          return _buildFilmGrid(films);
+        }
+        return const Center(
+          child: Text(
+            'Tidak ada film yang tersedia.',
+            style: TextStyle(color: Colors.white),
+          ),
+        );
+      },
     );
   }
 
-  // Widget untuk menampilkan efek shimmer saat loading
+  // ... fungsi _buildShimmerEffect dan _buildFilmGrid tetap sama
   Widget _buildShimmerEffect() {
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -66,7 +51,7 @@ class FilmListScreen extends StatelessWidget {
           crossAxisSpacing: 16,
           mainAxisSpacing: 16,
         ),
-        itemCount: 6, // Jumlah placeholder shimmer
+        itemCount: 6,
         itemBuilder: (context, index) {
           return Shimmer.fromColors(
             baseColor: AppTheme.tertiaryColor,
@@ -83,7 +68,6 @@ class FilmListScreen extends StatelessWidget {
     );
   }
 
-  // Widget untuk menampilkan grid film
   Widget _buildFilmGrid(List<Film> films) {
     return Padding(
       padding: const EdgeInsets.all(16),

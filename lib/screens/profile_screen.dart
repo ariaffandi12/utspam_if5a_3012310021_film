@@ -5,7 +5,6 @@ import 'package:utspam_if5a_3012310021_filmbioskop/services/auth_service.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/theme/app_theme.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/widget/custom_button.dart';
 
-
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
@@ -33,7 +32,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _logout() async {
     await AuthService.logout();
-    
     Navigator.pushAndRemoveUntil(
       context,
       PageTransition(
