@@ -8,12 +8,13 @@ class Transaction {
   final String scheduleTime;
   final String studio;
   final String buyerName;
+  final String username; // <-- PASTIKAN FIELD INI ADA
   final int ticketCount;
   final String purchaseDate;
   final double totalCost;
   final String paymentMethod;
   final String? cardNumber;
-  final String status; // 'selesai', 'pending', 'dibatalkan'
+  final String status;
 
   Transaction({
     required this.id,
@@ -25,6 +26,7 @@ class Transaction {
     required this.scheduleTime,
     required this.studio,
     required this.buyerName,
+    required this.username, // <-- PASTIKAN INI ADA
     required this.ticketCount,
     required this.purchaseDate,
     required this.totalCost,
@@ -44,6 +46,7 @@ class Transaction {
       'scheduleTime': scheduleTime,
       'studio': studio,
       'buyerName': buyerName,
+      'username': username, // <-- PASTIKAN INI ADA
       'ticketCount': ticketCount,
       'purchaseDate': purchaseDate,
       'totalCost': totalCost,
@@ -64,6 +67,7 @@ class Transaction {
       scheduleTime: json['scheduleTime'],
       studio: json['studio'],
       buyerName: json['buyerName'],
+      username: json['username'], // <-- PASTIKAN INI ADA
       ticketCount: json['ticketCount'],
       purchaseDate: json['purchaseDate'],
       totalCost: json['totalCost'].toDouble(),

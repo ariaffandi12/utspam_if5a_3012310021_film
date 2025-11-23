@@ -57,21 +57,22 @@ class _PurchaseDetailScreenState extends State<PurchaseDetailScreen> {
 
     // Buat objek transaksi baru dengan status 'dibatalkan'
     final updatedTransaction = Transaction(
-      id: _transaction.id,
-      filmId: _transaction.filmId,
-      filmTitle: _transaction.filmTitle,
-      filmPoster: _transaction.filmPoster,
-      scheduleId: _transaction.scheduleId,
-      scheduleDate: _transaction.scheduleDate,
-      scheduleTime: _transaction.scheduleTime,
-      studio: _transaction.studio,
-      buyerName: _transaction.buyerName,
-      ticketCount: _transaction.ticketCount,
-      purchaseDate: _transaction.purchaseDate,
-      totalCost: _transaction.totalCost,
-      paymentMethod: _transaction.paymentMethod,
-      cardNumber: _transaction.cardNumber,
-      status: 'dibatalkan', // Ubah status
+  id: _transaction.id,
+  filmId: _transaction.filmId,
+  filmTitle: _transaction.filmTitle,
+  filmPoster: _transaction.filmPoster,
+  scheduleId: _transaction.scheduleId,
+  scheduleDate: _transaction.scheduleDate,
+  scheduleTime: _transaction.scheduleTime,
+  studio: _transaction.studio,
+  buyerName: _transaction.buyerName,
+  username: _transaction.username, // <-- WAJIB ADA
+  ticketCount: _transaction.ticketCount,
+  purchaseDate: _transaction.purchaseDate,
+  totalCost: _transaction.totalCost,
+  paymentMethod: _transaction.paymentMethod,
+  cardNumber: _transaction.cardNumber,
+  status: 'dibatalkan',
     );
 
     // Simpan perubahan ke database lokal

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:utspam_if5a_3012310021_filmbioskop/models/jadwal_model.dart';
 import 'package:uuid/uuid.dart';
+import 'package:utspam_if5a_3012310021_filmbioskop/models/jadwal_model.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/database/transaction_database.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/models/film_model.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/models/transaction_model.dart';
-import 'package:utspam_if5a_3012310021_filmbioskop/screens/home_screen.dart'; 
+import 'package:utspam_if5a_3012310021_filmbioskop/models/user_model.dart';
+import 'package:utspam_if5a_3012310021_filmbioskop/screens/home_screen.dart';
+import 'package:utspam_if5a_3012310021_filmbioskop/services/auth_service.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/theme/app_theme.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/utils/validators.dart';
 import 'package:utspam_if5a_3012310021_filmbioskop/widget/custom_button.dart';
@@ -61,9 +63,19 @@ class _PurchaseFormScreenState extends State<PurchaseFormScreen> {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
+
+    final user = await AuthService.getCurrentUser();
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Gagal mengambil data user. Silakan login kembali.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      setState(() => _isLoading = false);
+      return;
+    }
 
     final transaction = Transaction(
       id: const Uuid().v4(),
@@ -75,6 +87,7 @@ class _PurchaseFormScreenState extends State<PurchaseFormScreen> {
       scheduleTime: widget.schedule.time,
       studio: widget.schedule.studio,
       buyerName: _buyerNameController.text,
+      username: user.username,
       ticketCount: int.parse(_ticketCountController.text),
       purchaseDate: DateFormat('yyyy-MM-dd').format(DateTime.now()),
       totalCost: _totalCost,
@@ -85,9 +98,7 @@ class _PurchaseFormScreenState extends State<PurchaseFormScreen> {
 
     await TransactionDatabase.saveTransaction(transaction);
 
-    setState(() {
-      _isLoading = false;
-    });
+    setState(() => _isLoading = false);
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -97,12 +108,9 @@ class _PurchaseFormScreenState extends State<PurchaseFormScreen> {
         ),
       );
 
-      // --- PERUBAHAN NAVIGASI ---
-      // Arahkan kembali ke HomeScreen dan buka tab Riwayat (indeks 2)
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          // Kita mengirim parameter initialIndex untuk membuka tab Riwayat
           builder: (context) => const HomeScreen(initialIndex: 2),
         ),
         (route) => false,
@@ -124,7 +132,6 @@ class _PurchaseFormScreenState extends State<PurchaseFormScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Bagian Detail Film
               Row(
                 children: [
                   ClipRRect(
@@ -160,18 +167,12 @@ class _PurchaseFormScreenState extends State<PurchaseFormScreen> {
                         const SizedBox(height: 8),
                         Text(
                           '${widget.schedule.date} • ${widget.schedule.time}',
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 14,
-                          ),
+                          style: const TextStyle(color: Colors.grey, fontSize: 14),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           'Studio: ${widget.schedule.studio}',
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 14,
-                          ),
+                          style: const TextStyle(color: Colors.grey, fontSize: 14),
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -187,31 +188,41 @@ class _PurchaseFormScreenState extends State<PurchaseFormScreen> {
                   ),
                 ],
               ),
+
               const SizedBox(height: 24),
-              // Bagian Form Pembelian
+
+              // =======================
+              // NAMA PEMBELI
+              // =======================
               TextFormField(
                 controller: _buyerNameController,
                 validator: Validators.validateBuyerName,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                ],
                 decoration: const InputDecoration(
                   labelText: 'Nama Pembeli',
                   prefixIcon: Icon(Icons.person),
                   hintText: 'Masukkan nama pembeli',
                 ),
               ),
+
               const SizedBox(height: 16),
+
               TextFormField(
                 controller: _ticketCountController,
                 validator: Validators.validateTicketCount,
                 keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: const InputDecoration(
                   labelText: 'Jumlah Tiket',
                   prefixIcon: Icon(Icons.confirmation_number),
                 ),
-                onChanged: (value) {
-                  _calculateTotalCost();
-                },
+                onChanged: (_) => _calculateTotalCost(),
               ),
+
               const SizedBox(height: 16),
+
               TextFormField(
                 initialValue: DateFormat('yyyy-MM-dd').format(DateTime.now()),
                 enabled: false,
@@ -220,7 +231,9 @@ class _PurchaseFormScreenState extends State<PurchaseFormScreen> {
                   prefixIcon: Icon(Icons.calendar_today),
                 ),
               ),
+
               const SizedBox(height: 16),
+
               Text(
                 'Total Biaya: Rp ${_totalCost.toInt()}',
                 style: const TextStyle(
@@ -229,7 +242,9 @@ class _PurchaseFormScreenState extends State<PurchaseFormScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+
               const SizedBox(height: 16),
+
               DropdownButtonFormField<String>(
                 value: _paymentMethod,
                 decoration: const InputDecoration(
@@ -237,34 +252,30 @@ class _PurchaseFormScreenState extends State<PurchaseFormScreen> {
                   prefixIcon: Icon(Icons.payment),
                 ),
                 items: const [
-                  DropdownMenuItem(
-                    value: 'Cash',
-                    child: Text('Cash'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Kartu',
-                    child: Text('Kartu'),
-                  ),
+                  DropdownMenuItem(value: 'Cash', child: Text('Cash')),
+                  DropdownMenuItem(value: 'Kartu', child: Text('Kartu')),
                 ],
                 onChanged: (value) {
-                  setState(() {
-                    _paymentMethod = value!;
-                  });
+                  setState(() => _paymentMethod = value!);
                 },
               ),
+
               if (_paymentMethod == 'Kartu') ...[
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _cardNumberController,
                   validator: Validators.validateCardNumber,
                   keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   decoration: const InputDecoration(
                     labelText: 'Nomor Kartu',
                     prefixIcon: Icon(Icons.credit_card),
                   ),
                 ),
               ],
+
               const SizedBox(height: 30),
+
               CustomButton(
                 text: 'Beli Tiket',
                 onPressed: _purchaseTicket,

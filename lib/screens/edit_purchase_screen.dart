@@ -62,22 +62,24 @@ class _EditPurchaseScreenState extends State<EditPurchaseScreen> {
     });
 
     final updatedTransaction = Transaction(
-      id: widget.transaction.id,
-      filmId: widget.transaction.filmId,
-      filmTitle: widget.transaction.filmTitle,
-      filmPoster: widget.transaction.filmPoster,
-      scheduleId: widget.transaction.scheduleId,
-      scheduleDate: widget.transaction.scheduleDate,
-      scheduleTime: widget.transaction.scheduleTime,
-      studio: widget.transaction.studio,
-      buyerName: widget.transaction.buyerName,
-      ticketCount: int.parse(_ticketCountController.text),
-      purchaseDate: widget.transaction.purchaseDate,
-      totalCost: _totalCost,
-      paymentMethod: _paymentMethod,
-      cardNumber: _paymentMethod == 'Kartu' ? _cardNumberController.text : null,
-      status: widget.transaction.status,
-    );
+  id: widget.transaction.id,
+  filmId: widget.transaction.filmId,
+  filmTitle: widget.transaction.filmTitle,
+  filmPoster: widget.transaction.filmPoster,
+  scheduleId: widget.transaction.scheduleId,
+  scheduleDate: widget.transaction.scheduleDate,
+  scheduleTime: widget.transaction.scheduleTime,
+  studio: widget.transaction.studio,
+  buyerName: widget.transaction.buyerName,
+  username: widget.transaction.username, // <-- WAJIB
+  ticketCount: int.parse(_ticketCountController.text),
+  purchaseDate: widget.transaction.purchaseDate,
+  totalCost: _totalCost,
+  paymentMethod: _paymentMethod,
+  cardNumber: _paymentMethod == 'Kartu' ? _cardNumberController.text : null,
+  status: widget.transaction.status,
+);
+
 
     await TransactionDatabase.updateTransaction(updatedTransaction);
 
