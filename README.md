@@ -1,8 +1,11 @@
 ## 📌 Tampilan Aplikasi
+## Deskripsi dokumentasi
 
+## Nama : muhammad ari affandix
+## NIm :  3012310021
 ---
 
-### 🔐 Login  
+### 🔐 Login  giy
 <br>
 
 <img src="https://github.com/user-attachments/assets/96d5f890-3842-4abb-a07e-21ed163c9ff7" width="350">
